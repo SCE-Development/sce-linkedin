@@ -1,0 +1,30 @@
+{
+  "name": "sce-linkedin",
+  "version": "1.0.0",
+  "description": "Club's internal alumni directory",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "node api/server.js",
+    "dev": "nodemon api/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SCE-Development/sce-linkedin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SCE-Development/sce-linkedin/issues"
+  },
+  "homepage": "https://github.com/SCE-Development/sce-linkedin#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,0 +1,25 @@
+services:
+  alumni-mongodb:
+    image: mongo
+    container_name: alumni-mongodb
+    volumes:
+      - alumni_mongodb_data:/data/db
+    ports:
+      - '27018:27017'
+
+  alumni-app:
+    build: .
+    container_name: alumni-app
+    command: npx nodemon api/server.js
+    environment:
+      - DATABASE_HOST=alumni-mongodb
+      - NODE_ENV=development
+    ports:
+      - '8081:8081'
+    depends_on:
+      - alumni-mongodb
+    volumes:
+      - ./api:/app/api
+
+volumes:
+  alumni_mongodb_data:

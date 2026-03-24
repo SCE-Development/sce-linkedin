@@ -29,6 +29,10 @@ const ExperienceSchema = new Schema({
 
 const AlumniSchema = new Schema(
   {
+    name: {
+      type: String,
+      required: true
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -58,6 +62,27 @@ const AlumniSchema = new Schema(
       type: Number
     },
     major: {
+      type: String,
+      default: ''
+    },
+    currentCompany: {
+      type: String,
+      default: ''
+    },
+    currentJobTitle: {
+      type: String,
+      default: ''
+    },
+    location: {
+      type: String,
+      default: ''
+    },
+    enrichmentStatus: {
+      type: String,
+      enum: ['pending', 'completed', 'failed'],
+      default: null
+    },
+    enrichmentJobId: {
       type: String,
       default: ''
     },

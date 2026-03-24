@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/SCE-Development/sce-linkedin#readme",
   "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
     "express": "^5.2.1",
     "mongoose": "^9.3.1"
   },

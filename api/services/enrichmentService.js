@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // Firecrawl configuration
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
-const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v1/agent';
+const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v2/agent';
 
 /**
  * Determine which fields are empty or null in an alumni record
@@ -48,7 +48,7 @@ function buildPrompt(alumni, missingFields) {
  * @param {Number} timeoutMs - Maximum time to wait in milliseconds (default 5 minutes)
  * @returns {Promise<Object>} The job result data
  */
-async function pollFirecrawlJob(jobId, timeoutMs = 5 * 60 * 1000) {
+async function pollFirecrawlJob(jobId, timeoutMs = 15 * 60 * 1000) { // 15 minutes
   const pollUrl = `${FIRECRAWL_BASE_URL}/${jobId}`;
   const startTime = Date.now();
 
@@ -110,8 +110,7 @@ async function enrichAlumniRecord(alumni) {
     const response = await axios.post(
       FIRECRAWL_BASE_URL,
       {
-        prompt: prompt,
-        wait_for_result: false // We'll poll manually
+        prompt: prompt
       },
       {
         headers: {

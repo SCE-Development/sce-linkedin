@@ -1,12 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const alumniRouter = require('./routes/Alumni');
-require('dotenv').config();
 
 const app = express();
 const PORT = 8081;
 
 app.use(express.json());
+app.use(express.static('public'));
 app.use('/api', alumniRouter);
 
 const dbHost = process.env.DATABASE_HOST || '127.0.0.1';

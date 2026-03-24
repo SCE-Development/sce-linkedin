@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCE Alumni Directory</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎓 SCE Alumni Directory</h1>
+      <p>Manage alumni profiles with AI-powered enrichment</p>
+    </header>
+
+    <main>
+      <!-- Create Form -->
+      <section class="create-form">
+        <h2>Add New Alumni</h2>
+        <form id="createAlumniForm">
+          <div class="form-group">
+            <label for="name">Name *</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="headline">Headline</label>
+            <input type="text" id="headline" name="headline">
+          </div>
+          <div class="form-group">
+            <label for="profilePhotoUrl">Profile Photo URL</label>
+            <input type="url" id="profilePhotoUrl" name="profilePhotoUrl">
+          </div>
+          <div class="form-group">
+            <label for="linkedInUrl">LinkedIn URL</label>
+            <input type="url" id="linkedInUrl" name="linkedInUrl">
+          </div>
+          <div class="form-group">
+            <label for="startYear">Start Year</label>
+            <input type="number" id="startYear" name="startYear">
+          </div>
+          <div class="form-group">
+            <label for="graduationYear">Graduation Year</label>
+            <input type="number" id="graduationYear" name="graduationYear">
+          </div>
+          <div class="form-group">
+            <label for="major">Major</label>
+            <input type="text" id="major" name="major">
+          </div>
+          <div class="form-group checkbox">
+            <input type="checkbox" id="needsEnrichment" name="needsEnrichment">
+            <label for="needsEnrichment">Auto-enrich with Firecrawl (fills missing fields)</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Create Alumni</button>
+        </form>
+      </section>
+
+      <!-- Alumni List -->
+      <section class="alumni-list">
+        <h2>All Alumni</h2>
+        <div id="loading" class="loading">Loading...</div>
+        <div id="alumniGrid" class="alumni-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Edit Alumni</h2>
+      <form id="editAlumniForm">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label for="editName">Name *</label>
+          <input type="text" id="editName" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="editBio">Bio</label>
+          <textarea id="editBio" name="bio" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="editHeadline">Headline</label>
+          <input type="text" id="editHeadline" name="headline">
+        </div>
+        <div class="form-group">
+          <label for="editProfilePhotoUrl">Profile Photo URL</label>
+          <input type="url" id="editProfilePhotoUrl" name="profilePhotoUrl">
+        </div>
+        <div class="form-group">
+          <label for="editLinkedInUrl">LinkedIn URL</label>
+          <input type="url" id="editLinkedInUrl" name="linkedInUrl">
+        </div>
+        <div class="form-group">
+          <label for="editStartYear">Start Year</label>
+          <input type="number" id="editStartYear" name="startYear">
+        </div>
+        <div class="form-group">
+          <label for="editGraduationYear">Graduation Year</label>
+          <input type="number" id="editGraduationYear" name="graduationYear">
+        </div>
+        <div class="form-group">
+          <label for="editMajor">Major</label>
+          <input type="text" id="editMajor" name="major">
+        </div>
+        <div class="form-group">
+          <label for="editCurrentCompany">Current Company</label>
+          <input type="text" id="editCurrentCompany" name="currentCompany">
+        </div>
+        <div class="form-group">
+          <label for="editCurrentJobTitle">Current Job Title</label>
+          <input type="text" id="editCurrentJobTitle" name="currentJobTitle">
+        </div>
+        <div class="form-group">
+          <label for="editLocation">Location</label>
+          <input type="text" id="editLocation" name="location">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

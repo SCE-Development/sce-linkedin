@@ -14,6 +14,7 @@ services:
     environment:
       - DATABASE_HOST=alumni-mongodb
       - NODE_ENV=development
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY}
     ports:
       - '8081:8081'
     depends_on:

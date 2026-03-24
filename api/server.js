@@ -1,10 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const alumniRouter = require('./routes/Alumni');
 
 const app = express();
 const PORT = 8081;
 
 app.use(express.json());
+app.use('/api', alumniRouter);
 
 const dbHost = process.env.DATABASE_HOST || '127.0.0.1';
 mongoose

@@ -27,6 +27,18 @@ function getMissingFields(alumni) {
   if (!alumni.linkedInUrl || alumni.linkedInUrl.trim() === '') {
     missingFields.push('linkedin_profile_url');
   }
+  if (!alumni.bio || alumni.bio.trim() === '') {
+    missingFields.push('bio');
+  }
+  if (!alumni.headline || alumni.headline.trim() === '') {
+    missingFields.push('headline');
+  }
+  if (!alumni.startYear) {
+    missingFields.push('start_year');
+  }
+  if (!alumni.major || alumni.major.trim() === '') {
+    missingFields.push('major');
+  }
 
   return missingFields;
 }
@@ -39,7 +51,7 @@ function getMissingFields(alumni) {
  */
 function buildPrompt(alumni, missingFields) {
   const fieldsList = missingFields.join(', ');
-  return `Find information about ${alumni.name}, an SJSU alumnus. Return ONLY these fields: ${fieldsList}. Try to find the most recent information (2024-2025). If recent data is not available, return whatever you can find. Provide accurate, factual data.`;
+  return `Find information about ${alumni.name}, an SJSU alumnus. If there are multiple people with this name, choose one who has any association with a club called The Software and Computer Engineering Society or SCE. Return ONLY these fields: ${fieldsList}. Try to find the most recent information (2024-2025). If recent data is not available, return whatever you can find. Provide accurate, factual data.`;
 }
 
 /**
@@ -199,7 +211,11 @@ function mapFirecrawlFieldToSchema(firecrawlField) {
     'current_job_title': 'currentJobTitle',
     'graduation_year': 'graduationYear',
     'location': 'location',
-    'linkedin_profile_url': 'linkedInUrl'
+    'linkedin_profile_url': 'linkedInUrl',
+    'bio': 'bio',
+    'headline': 'headline',
+    'start_year': 'startYear',
+    'major': 'major'
   };
 
   return fieldMap[firecrawlField] || firecrawlField;

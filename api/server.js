@@ -8,6 +8,7 @@ const app = express();
 const PORT = 8081;
 
 app.use(express.json());
+app.use('/api', alumniRouter);
 
 // Serve React build from dist/
 app.use(express.static('dist'));

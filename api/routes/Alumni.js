@@ -1,6 +1,6 @@
 const express = require('express');
 const Alumni = require('../models/Alumni');
-const { enrichAlumniRecord } = require('../services/enrichmentService');
+const { enrichAlumni, getEnrichedData } = require('../services/enrichmentService');
 
 // Generate a random 24-character hex string (MongoDB ObjectId format)
 function generateObjectId() {
@@ -38,7 +38,7 @@ router.get('/alumni/:id', async (req, res) => {
 // Create a new alumni profile
 router.post('/alumni', async (req, res) => {
   try {
-    // Ensure name is provided (required for enrichment)
+    // Ensure name is provided
     if (!req.body.name) {
       return res.status(400).json({ error: 'Name is required for alumni record' });
     }
@@ -49,21 +49,44 @@ router.post('/alumni', async (req, res) => {
     }
 
     const alumni = await new Alumni(req.body).save();
+    res.status(201).json(alumni);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    // Check if enrichment is requested
-    if (req.body.needsEnrichment === true) {
-      // Trigger enrichment in the background (fire and forget)
-      enrichAlumniRecord(alumni)
-        .then(result => {
-          console.log('Enrichment triggered:', result);
-        })
-        .catch(error => {
-          console.error('Enrichment trigger error:', error);
-        });
+// Start enrichment job (preview mode - doesn't save to DB)
+router.post('/alumni/enrich', async (req, res) => {
+  try {
+    const { name, graduationYear } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required for enrichment' });
     }
 
-    // Return the created alumni immediately
-    res.status(201).json(alumni);
+    const alumni = { name, graduationYear };
+    const result = await enrichAlumni(alumni);
+
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    res.json({ jobId: result.jobId, status: 'pending' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Poll for enrichment job status
+router.get('/alumni/enrich/:jobId', async (req, res) => {
+  try {
+    const result = await getEnrichedData(req.params.jobId);
+
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -310,3 +310,47 @@ main {
 .close:hover {
   color: #333;
 }
+
+/* Enrich Button Styles */
+.input-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+.btn-enrich {
+  background: #8b5cf6;
+  color: white;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+.btn-enrich:hover:not(:disabled) {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.input-blur {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.enrich-loading {
+  background: #fef3c7;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 14px;
+  display: block;
+  margin-top: 4px;
+}

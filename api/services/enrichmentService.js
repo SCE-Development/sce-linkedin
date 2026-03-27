@@ -5,6 +5,92 @@ const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v2/agent';
 
 /**
+ * Start an enrichment job and return job ID immediately
+ * @param {Object} alumni - The alumni record to enrich
+ * @returns {Promise<Object>} Result with jobId
+ */
+async function startEnrichmentJob(alumni) {
+  const missingFields = getMissingFields(alumni);
+
+  if (missingFields.length === 0) {
+    return { success: true, skipped: true, reason: 'no_missing_fields' };
+  }
+
+  const prompt = buildPrompt(alumni, missingFields);
+
+  try {
+    const response = await axios.post(
+      FIRECRAWL_BASE_URL,
+      { prompt: prompt },
+      {
+        headers: {
+          'Authorization': `Bearer ${FIRECRAWL_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const jobId = response.data.jobId || response.data.id;
+    console.log(`Firecrawl job started with ID: ${jobId}`);
+
+    return { success: true, jobId: jobId, missingFields };
+  } catch (error) {
+    console.error(`Failed to start Firecrawl job:`, error.message);
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message
+    };
+  }
+}
+
+/**
+ * Poll Firecrawl job and get enriched data
+ * @param {String} jobId - The Firecrawl job ID
+ * @returns {Promise<Object>} The job result data
+ */
+async function getEnrichedData(jobId) {
+  const pollUrl = `${FIRECRAWL_BASE_URL}/${jobId}`;
+
+  try {
+    const response = await axios.get(pollUrl, {
+      headers: {
+        'Authorization': `Bearer ${FIRECRAWL_API_KEY}`
+      }
+    });
+
+    const job = response.data;
+    const status = job.status;
+
+    if (status === 'completed' || status === 'success') {
+      const data = {};
+      for (const [key, value] of Object.entries(job.data || {})) {
+        const schemaField = mapFirecrawlFieldToSchema(key);
+        if (value && value !== '') {
+          data[schemaField] = value;
+        }
+      }
+      return { success: true, status: 'completed', data };
+    } else if (status === 'failed' || status === 'error') {
+      return { success: false, status: 'failed', error: job.error || 'Firecrawl job failed' };
+    }
+
+    return { success: true, status: 'pending' };
+  } catch (error) {
+    console.error('Error polling Firecrawl job:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Main enrichment function - starts job and returns jobId for polling
+ * @param {Object} alumni - The alumni record with name and optional graduationYear
+ * @returns {Promise<Object>} Result with jobId for polling
+ */
+async function enrichAlumni(alumni) {
+  return startEnrichmentJob(alumni);
+}
+
+/**
  * Determine which fields are empty or null in an alumni record
  * @param {Object} alumni - The alumni record
  * @returns {Array} Array of Firecrawl field names that need enrichment
@@ -222,7 +308,7 @@ function mapFirecrawlFieldToSchema(firecrawlField) {
 }
 
 module.exports = {
-  enrichAlumniRecord,
-  getMissingFields,
-  buildPrompt
+  enrichAlumni,
+  startEnrichmentJob,
+  getEnrichedData
 };

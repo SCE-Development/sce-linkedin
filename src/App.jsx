@@ -30,14 +30,9 @@ function App() {
   // Create alumni
   const handleCreate = async (formData) => {
     try {
-      const response = await axios.post(`${API_URL}/alumni`, formData);
+      await axios.post(`${API_URL}/alumni`, formData);
       showAlert('Alumni created successfully!', 'success');
       loadAlumni();
-
-      // Poll for enrichment if requested
-      if (response.data.enrichmentStatus === 'pending') {
-        pollEnrichment(response.data._id);
-      }
     } catch (error) {
       showAlert(error.response?.data?.error || error.message, 'error');
     }
@@ -157,8 +152,61 @@ function AlumniForm({ onSubmit }) {
     startYear: '',
     graduationYear: '',
     major: '',
-    needsEnrichment: false,
   });
+
+  const [isEnriching, setIsEnriching] = useState(false);
+  const [enrichJobId, setEnrichJobId] = useState(null);
+  const [enrichError, setEnrichError] = useState('');
+
+  const handleEnrich = async () => {
+    if (!formData.name.trim()) {
+      setEnrichError('Please enter a name first');
+      return;
+    }
+
+    setIsEnriching(true);
+    setEnrichError('');
+    setEnrichJobId(null);
+
+    try {
+      const response = await axios.post(`${API_URL}/alumni/enrich`, {
+        name: formData.name,
+        graduationYear: formData.graduationYear ? parseInt(formData.graduationYear) : null,
+      });
+
+      setEnrichJobId(response.data.jobId);
+      pollEnrichment(response.data.jobId);
+    } catch (error) {
+      setEnrichError(error.response?.data?.error || error.message);
+      setIsEnriching(false);
+    }
+  };
+
+  const pollEnrichment = (jobId) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await axios.get(`${API_URL}/alumni/enrich/${jobId}`);
+
+        if (response.data.status === 'completed') {
+          clearInterval(interval);
+          setIsEnriching(false);
+
+          if (response.data.data) {
+            setFormData((prev) => ({
+              ...prev,
+              ...response.data.data,
+            }));
+          }
+        } else if (response.data.status === 'failed') {
+          clearInterval(interval);
+          setIsEnriching(false);
+          setEnrichError(response.data.error || 'Enrichment failed');
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 3000);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -179,7 +227,6 @@ function AlumniForm({ onSubmit }) {
       startYear: '',
       graduationYear: '',
       major: '',
-      needsEnrichment: false,
     });
   };
 
@@ -191,19 +238,38 @@ function AlumniForm({ onSubmit }) {
     }));
   };
 
+  const inputBlurClass = isEnriching ? 'input-blur' : '';
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="name">Name *</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+        <div className="input-with-button">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+          <button
+            type="button"
+            className="btn btn-enrich"
+            onClick={handleEnrich}
+            disabled={isEnriching || !formData.name.trim()}
+          >
+            {isEnriching ? '⏳ Fetching...' : '✨ Enrich'}
+          </button>
+        </div>
+        {enrichError && <span className="error-text">{enrichError}</span>}
       </div>
+
+      {isEnriching && (
+        <div className="enrich-loading">
+          Fetching data... Please wait.
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="bio">Bio</label>
@@ -213,6 +279,8 @@ function AlumniForm({ onSubmit }) {
           rows="3"
           value={formData.bio}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -224,6 +292,8 @@ function AlumniForm({ onSubmit }) {
           name="headline"
           value={formData.headline}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -235,6 +305,8 @@ function AlumniForm({ onSubmit }) {
           name="profilePhotoUrl"
           value={formData.profilePhotoUrl}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -246,6 +318,8 @@ function AlumniForm({ onSubmit }) {
           name="linkedInUrl"
           value={formData.linkedInUrl}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -257,6 +331,8 @@ function AlumniForm({ onSubmit }) {
           name="startYear"
           value={formData.startYear}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -268,6 +344,8 @@ function AlumniForm({ onSubmit }) {
           name="graduationYear"
           value={formData.graduationYear}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
@@ -279,24 +357,52 @@ function AlumniForm({ onSubmit }) {
           name="major"
           value={formData.major}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
       </div>
 
-      <div className="form-group checkbox">
+      <div className="form-group">
+        <label htmlFor="currentCompany">Current Company</label>
         <input
-          type="checkbox"
-          id="needsEnrichment"
-          name="needsEnrichment"
-          checked={formData.needsEnrichment}
+          type="text"
+          id="currentCompany"
+          name="currentCompany"
+          value={formData.currentCompany || ''}
           onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
         />
-        <label htmlFor="needsEnrichment">
-          Auto-enrich with Firecrawl (fills missing fields)
-        </label>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="currentJobTitle">Current Job Title</label>
+        <input
+          type="text"
+          id="currentJobTitle"
+          name="currentJobTitle"
+          value={formData.currentJobTitle || ''}
+          onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="location">Location</label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          value={formData.location || ''}
+          onChange={handleChange}
+          className={inputBlurClass}
+          disabled={isEnriching}
+        />
       </div>
 
       <button type="submit" className="btn btn-primary">
-        Create Alumni
+        💾 Insert Alumni Record
       </button>
     </form>
   );
@@ -328,22 +434,6 @@ function AlumniCard({ alumni, onEdit, onDelete }) {
       return 'N/A';
     }
     return value;
-  };
-
-  const getStatusBadge = (status) => {
-    const statusMap = {
-      pending: 'status-pending',
-      completed: 'status-completed',
-      failed: 'status-failed',
-    };
-    const className = status
-      ? statusMap[status] || 'status-none'
-      : 'status-none';
-    return (
-      <span className={`status ${className}`}>
-        {status || 'not requested'}
-      </span>
-    );
   };
 
   return (
@@ -387,7 +477,6 @@ function AlumniCard({ alumni, onEdit, onDelete }) {
           <span className="info-value">{formatValue(alumni.headline)}</span>
         </div>
       </div>
-      {getStatusBadge(alumni.enrichmentStatus)}
       <div className="actions">
         <button className="btn btn-edit" onClick={() => onEdit(alumni)}>
           Edit

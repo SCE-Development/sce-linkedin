@@ -8,7 +8,11 @@ const app = express();
 const PORT = 8081;
 
 app.use(express.json());
-app.use(express.static('public'));
+
+// Serve React build from dist/
+app.use(express.static('dist'));
+
+// API routes
 app.use('/api', alumniRouter);
 
 const dbHost = process.env.DATABASE_HOST || '127.0.0.1';

@@ -5,7 +5,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 20px;
@@ -49,7 +50,7 @@ main {
   background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .create-form h2,
@@ -71,9 +72,9 @@ main {
   color: #555;
 }
 
-.form-group input[type="text"],
-.form-group input[type="url"],
-.form-group input[type="number"],
+.form-group input[type='text'],
+.form-group input[type='url'],
+.form-group input[type='number'],
 .form-group textarea {
   width: 100%;
   padding: 10px;
@@ -129,7 +130,7 @@ main {
 }
 
 .btn-edit {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   padding: 6px 12px;
   font-size: 12px;
@@ -146,6 +147,25 @@ main {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.alert {
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
 .loading {
@@ -168,7 +188,7 @@ main {
 }
 
 .alumni-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -245,13 +265,13 @@ main {
 
 /* Modal */
 .modal {
-  display: none;
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   overflow-y: auto;
   padding: 20px;
@@ -289,23 +309,4 @@ main {
 
 .close:hover {
   color: #333;
-}
-
-.alert {
-  padding: 12px 20px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-weight: 500;
-}
-
-.alert-success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.alert-error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
 }

@@ -21,5 +21,18 @@ services:
     volumes:
       - ./api:/app/api
 
+  alumni-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: alumni-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - alumni-app
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+
 volumes:
   alumni_mongodb_data:

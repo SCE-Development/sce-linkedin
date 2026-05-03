@@ -2,10 +2,11 @@
   "name": "sce-linkedin",
   "version": "1.0.0",
   "description": "Club's internal alumni directory",
-  "main": "api/server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node api/server.js",
-    "dev": "nodemon api/server.js",
+    "start": "node dist/server.js",
+    "dev": "ts-node api/server.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +26,10 @@
     "mongoose": "^9.3.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
   }
 }

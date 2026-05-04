@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import Alumni from '../models/Alumni';
+import { validate, createAlumniSchema, updateAlumniSchema, CreateAlumniInput, UpdateAlumniInput } from '../schema/AlumniSchema';
 
 const router = Router();
 
@@ -25,9 +26,9 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // Create a new alumni profile
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validate(createAlumniSchema), async (req: Request, res: Response) => {
   try {
-    const alumni = await new Alumni(req.body).save();
+    const alumni = await new Alumni(req.body as CreateAlumniInput).save();
     res.status(201).json(alumni);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -35,9 +36,9 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // Update an existing alumni profile
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', validate(updateAlumniSchema), async (req: Request, res: Response) => {
   try {
-    const alumni = await Alumni.findByIdAndUpdate(req.params.id, req.body, {
+    const alumni = await Alumni.findByIdAndUpdate(req.params.id, req.body as UpdateAlumniInput, {
       new: true,
       runValidators: true,
     });

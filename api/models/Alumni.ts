@@ -10,10 +10,10 @@ export interface IExperience {
 }
 
 export interface IAlumni extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
+  name: string;
   bio: string;
   headline: string;
-  profilePhotoUrl: string;
   linkedInUrl: string;
   startYear?: number;
   graduationYear?: number;
@@ -49,20 +49,19 @@ const ExperienceSchema = new Schema<IExperience>({
 const AlumniSchema = new Schema<IAlumni>(
   {
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
       unique: true,
+    },
+    name: {
+      type: String,
+      default: "",
     },
     bio: {
       type: String,
       default: "",
     },
     headline: {
-      type: String,
-      default: "",
-    },
-    profilePhotoUrl: {
       type: String,
       default: "",
     },

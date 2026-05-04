@@ -1,12 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import alumniRouter from "./routes/Alumni";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 const PORT = 8081;
 
 app.use(express.json());
 app.use("/api", alumniRouter);
+app.use(errorHandler);
 
 const dbHost = process.env.DATABASE_HOST || "127.0.0.1";
 mongoose

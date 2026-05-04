@@ -10,9 +10,9 @@ export interface Experience {
 export interface Alumni {
   _id: string;
   userId: string;
+  name: string;
   bio: string;
   headline: string;
-  profilePhotoUrl: string;
   linkedInUrl: string;
   startYear?: number;
   graduationYear?: number;

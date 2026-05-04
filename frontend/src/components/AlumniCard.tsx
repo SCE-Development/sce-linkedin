@@ -12,23 +12,18 @@ export default function AlumniCard({ alumni }: Props) {
       className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
     >
       <div className="flex items-center gap-4">
-        {alumni.profilePhotoUrl ? (
-          <img
-            src={alumni.profilePhotoUrl}
-            alt={alumni.headline}
-            className="h-16 w-16 rounded-full object-cover"
-          />
-        ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-600">
-            {alumni.headline?.charAt(0)?.toUpperCase() || "?"}
-          </div>
-        )}
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-600">
+          {alumni.name?.charAt(0)?.toUpperCase() || "?"}
+        </div>
         <div className="min-w-0 text-left">
           <h3 className="truncate text-lg font-semibold text-gray-900">
-            {alumni.headline || "Unnamed Alumni"}
+            {alumni.name || "Unnamed Alumni"}
           </h3>
+          {alumni.headline && (
+            <p className="truncate text-sm text-gray-600">{alumni.headline}</p>
+          )}
           {alumni.major && (
-            <p className="text-sm text-gray-600">{alumni.major}</p>
+            <p className="text-sm text-gray-500">{alumni.major}</p>
           )}
           {alumni.graduationYear && (
             <p className="text-sm text-gray-500">

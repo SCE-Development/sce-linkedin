@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import type { Alumni } from "../types/alumni";
-import { fetchAlumniById } from "../services/api";
+import { fetchAlumniById, deleteAlumni } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 function formatDate(dateStr?: string): string {
@@ -14,9 +14,12 @@ function formatDate(dateStr?: string): string {
 
 export default function DetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -25,6 +28,19 @@ export default function DetailPage() {
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handleDelete() {
+    if (!id || !window.confirm("Are you sure you want to delete this profile? This cannot be undone.")) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAlumni(id);
+      navigate("/");
+    } catch (e: unknown) {
+      setDeleteError(e instanceof Error ? e.message : "Failed to delete profile");
+      setDeleting(false);
+    }
+  }
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -41,26 +57,43 @@ export default function DetailPage() {
         &larr; Back to directory
       </Link>
 
+      {deleteError && (
+        <p className="mb-3 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+          {deleteError}
+        </p>
+      )}
+
+      <div className="mb-4 flex items-center justify-end gap-3">
+        <Link
+          to={`/profile/edit/${id}`}
+          className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Edit Profile
+        </Link>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {deleting ? "Deleting..." : "Delete Profile"}
+        </button>
+      </div>
+
       <div className="rounded-lg border border-gray-200 bg-white p-8">
         <div className="flex flex-col items-start gap-6 sm:flex-row">
-          {alumni.profilePhotoUrl ? (
-            <img
-              src={alumni.profilePhotoUrl}
-              alt={alumni.headline}
-              className="h-24 w-24 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-600">
-              {alumni.headline?.charAt(0)?.toUpperCase() || "?"}
-            </div>
-          )}
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-600">
+            {alumni.name?.charAt(0)?.toUpperCase() || "?"}
+          </div>
 
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {alumni.headline || "Unnamed Alumni"}
+              {alumni.name || "Unnamed Alumni"}
             </h1>
+            {alumni.headline && (
+              <p className="mt-1 text-gray-600">{alumni.headline}</p>
+            )}
             {alumni.major && (
-              <p className="mt-1 text-gray-600">{alumni.major}</p>
+              <p className="mt-1 text-gray-500">{alumni.major}</p>
             )}
             {alumni.graduationYear && (
               <p className="text-sm text-gray-500">
